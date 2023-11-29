@@ -1,0 +1,90 @@
+import requests
+import sys
+
+print('Seja bem-vindo(a) ao CryptoPay!')
+
+transacao = input('deseja fazer uma transação? ')
+if transacao.lower() == 'sim':
+    print('Ok!')
+else:
+    sys.exit()
+
+def obter_preco(criptomoeda):
+    url = f'https://api.coingecko.com/api/v3/simple/price?ids={criptomoeda}&vs_currencies=usd'
+    resposta = requests.get(url)
+    dados = resposta.json()
+    preco = dados[criptomoeda]['usd']
+    return preco
+
+def main():
+    print("Escolha uma criptomoeda: ")
+    print("1. Ethereum")
+    print("2. Bitcoin")
+
+    escolha = input("Digite o número correspondente à criptomoeda desejada: ")
+
+    if escolha == '1':
+        cripto_escolhida = 'ethereum'
+    elif escolha == '2':
+        cripto_escolhida = 'bitcoin'
+    else:
+        print("Escolha inválida.")
+        return
+
+    preco = obter_preco(cripto_escolhida)
+    print(f'O preço do {cripto_escolhida.capitalize()} hoje é ${preco:.2f}')
+    
+if __name__ == '__main__':
+    main()
+
+class Block:
+    def __init__(self, valor_em_real, valor_em_dolares, cripto_escolhida, quantidade_cripto):
+        self.valor_em_real = valor_em_real
+        self.valor_em_dolares = valor_em_dolares
+        self.cripto_escolhida = cripto_escolhida
+        self.quantidade_cripto = quantidade_cripto
+
+def obter_preco(criptomoeda):
+    url = f'https://api.coingecko.com/api/v3/simple/price?ids={criptomoeda}&vs_currencies=usd'
+    resposta = requests.get(url)
+    dados = resposta.json()
+    preco = dados[criptomoeda]['usd']
+    return preco
+
+def converter_para_dolares(valor_em_real, taxa_cambio):
+    valor_em_dolares = valor_em_real / taxa_cambio
+    return valor_em_dolares
+
+def converter_para_cripto(valor_em_dolares, preco_em_dolar):
+    quantidade_cripto = valor_em_dolares / preco_em_dolar
+    return quantidade_cripto
+
+def main():
+    blockchain = [] 
+
+    print("Simulação de Transação")
+
+    valor_em_real = float(input("digite a quantidade em reais: "))
+
+    taxa_cambio_dolar = 4.89  # Taxa de câmbio real para dólar em 24/11
+    valor_em_dolares = converter_para_dolares(valor_em_real, taxa_cambio_dolar)
+    print(f'{valor_em_real:.2f} reais equivalem a {valor_em_dolares:.2f} dólares.')
+
+    cripto_escolhida = input("escolha uma criptomoeda (ethereum ou bitcoin): ").lower()
+
+    preco_em_dolar = obter_preco(cripto_escolhida)
+    
+    quantidade_cripto = converter_para_cripto(valor_em_dolares, preco_em_dolar)
+    print(f'{valor_em_dolares:.2f} dólares equivalem a {quantidade_cripto:.6f} {cripto_escolhida}.')
+
+    novo_bloco = Block(valor_em_real, valor_em_dolares, cripto_escolhida, quantidade_cripto)
+    blockchain.append(novo_bloco)
+
+    print(f"transação concluída: {valor_em_real:.2f} reais foram convertidos para {quantidade_cripto:.6f} {cripto_escolhida} e transferidos para a conta desejada.")
+
+    print("\nBlockchain:")
+    for i, bloco in enumerate(blockchain, start=1):
+        print(f"Block {i}: {bloco.__dict__}")
+
+if __name__ == "__main__":
+    main()
