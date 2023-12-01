@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
 contract CryptoPay {
     address public owner;
-    
+
     struct Block {
         uint256 valorEmReal;
         uint256 valorEmDolares;
@@ -13,17 +15,23 @@ contract CryptoPay {
 
     Block[] public blockchain;
 
+    
+    AggregatorV3Interface internal ethUsdPriceFeed;
+
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function");
+        require(msg.sender == owner, "only the owner can call this function");
         _;
     }
 
     constructor() {
         owner = msg.sender;
+
+        ethUsdPriceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
     }
 
-    function obterPreco(string memory criptoMoeda) public view returns (uint256) {
-        return 100;
+    function obterPreco(string memory) public view returns (uint256) {
+        (, int256 price, , ,) = ethUsdPriceFeed.latestRoundData();
+        return uint256(price);
     }
 
     function converterParaDolares(uint256 valorEmReal, uint256 taxaCambio) public pure returns (uint256) {
@@ -51,7 +59,6 @@ contract CryptoPay {
 
         blockchain.push(novoBloco);
 
-        
         emit TransacaoConcluida(
             valorEmReal,
             valorEmDolares,
